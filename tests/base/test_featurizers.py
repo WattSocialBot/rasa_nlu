@@ -5,18 +5,15 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os
-
 import numpy as np
 import pytest
 
 from rasa_nlu import training_data, config
-from rasa_nlu.config import RasaNLUModelConfig
+from rasa_nlu.tokenizers import Token
 from rasa_nlu.tokenizers.mitie_tokenizer import MitieTokenizer
 from rasa_nlu.tokenizers.spacy_tokenizer import SpacyTokenizer
 from rasa_nlu.training_data import Message
 from rasa_nlu.training_data import TrainingData
-from rasa_nlu.tokenizers import Token
 
 
 @pytest.mark.parametrize("sentence, expected", [
@@ -29,6 +26,17 @@ def test_spacy_featurizer(sentence, expected, spacy_nlp):
     vecs = spacy_featurizer.features_for_doc(doc)
     assert np.allclose(doc.vector[:5], expected, atol=1e-5)
     assert np.allclose(vecs, doc.vector, atol=1e-5)
+
+
+@pytest.mark.parametrize("sentence, expected_type, expected_emb_size", [
+    ("hey how are you today", np.ndarray, (1024,))
+])
+def test_elmo_featurizer(sentence, expected_type, expected_emb_size, spacy_nlp):
+    from rasa_nlu.featurizers import elmo_featurizer
+    doc = spacy_nlp(sentence)
+    sentence_vec = elmo_featurizer.features_for_doc(doc)
+    assert type(sentence_vec) == expected_type
+    assert sentence_vec.shape == expected_emb_size
 
 
 def test_mitie_featurizer(mitie_feature_extractor, default_config):
@@ -122,7 +130,7 @@ def test_spacy_featurizer_casing(spacy_nlp):
 
         assert np.allclose(vecs, vecs_capitalized, atol=1e-5), \
             "Vectors are unequal for texts '{}' and '{}'".format(
-                    e.text, e.text.capitalize())
+                e.text, e.text.capitalize())
 
 
 @pytest.mark.parametrize("sentence, expected", [

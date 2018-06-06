@@ -7,14 +7,14 @@ from __future__ import unicode_literals
 
 import os
 import pytest
-from rasa_nlu.config import RasaNLUModelConfig
 
-from tests.conftest import DEFAULT_DATA_PATH
 from rasa_nlu import registry, train
+from rasa_nlu.config import RasaNLUModelConfig
 from rasa_nlu.model import Trainer, Interpreter
 from rasa_nlu.train import create_persistor
 from rasa_nlu.training_data import TrainingData
 from tests import utilities
+from tests.conftest import DEFAULT_DATA_PATH
 
 
 def as_pipeline(*components):
@@ -28,35 +28,40 @@ def pipelines_for_tests():
     # generate this automatically.
 
     # first is language followed by list of components
+    # return [("en", as_pipeline("nlp_spacy",
+    #                            "nlp_mitie",
+    #                            "tokenizer_whitespace",
+    #                            "tokenizer_mitie",
+    #                            "tokenizer_spacy",
+    #                            "intent_featurizer_mitie",
+    #                            "intent_featurizer_spacy",
+    #                            "intent_featurizer_ngrams",
+    #                            "intent_entity_featurizer_regex",
+    #                            "intent_featurizer_count_vectors",
+    #                            "ner_mitie",
+    #                            "ner_crf",
+    #                            "ner_spacy",
+    #                            "ner_duckling",
+    #                            "ner_duckling_http",
+    #                            "ner_synonyms",
+    #                            "intent_classifier_keyword",
+    #                            "intent_classifier_sklearn",
+    #                            "intent_classifier_mitie",
+    #                            "intent_classifier_tensorflow_embedding",
+    #                            "intent_featurizer_elmo"
+    #                            )),
+    #         ("zh", as_pipeline("nlp_mitie",
+    #                            "tokenizer_jieba",
+    #                            "intent_featurizer_mitie",
+    #                            "ner_mitie",
+    #                            "intent_classifier_sklearn",
+    #                            )),
+    #         ]
     return [("en", as_pipeline("nlp_spacy",
-                               "nlp_mitie",
-                               "tokenizer_whitespace",
-                               "tokenizer_mitie",
                                "tokenizer_spacy",
-                               "intent_featurizer_mitie",
-                               "intent_featurizer_spacy",
-                               "intent_featurizer_ngrams",
-                               "intent_entity_featurizer_regex",
-                               "intent_featurizer_count_vectors",
-                               "ner_mitie",
-                               "ner_crf",
-                               "ner_spacy",
-                               "ner_duckling",
-                               "ner_duckling_http",
-                               "ner_synonyms",
-                               "intent_classifier_keyword",
-                               "intent_classifier_sklearn",
-                               "intent_classifier_mitie",
-                               "intent_classifier_tensorflow_embedding"
-                               )),
-            ("zh", as_pipeline("nlp_mitie",
-                               "tokenizer_jieba",
-                               "intent_featurizer_mitie",
-                               "ner_mitie",
-                               "intent_classifier_sklearn",
-                               )),
+                               "intent_featurizer_elmo"
+                               "intent_classifier_sklearn"))
             ]
-
 
 def test_all_components_are_in_at_least_one_test_pipeline():
     """There is a template that includes all components to

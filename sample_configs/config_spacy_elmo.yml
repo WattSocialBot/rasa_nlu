@@ -1,0 +1,6 @@
+language: "en"
+
+pipeline:
+  - name: "nlp_spacy"
+  - name: "intent_featurizer_elmo"
+  - name: "intent_classifier_sklearn"
